@@ -389,7 +389,12 @@ func getNonceAccept(nonce []byte) (expected []byte, err error) {
 func hybiClientHandshake(config *Config, br *bufio.Reader, bw *bufio.Writer) (err error) {
 	bw.WriteString("GET " + config.Location.RequestURI() + " HTTP/1.1\r\n")
 
-	bw.WriteString("Host: " + config.Location.Host + "\r\n")
+	if len(config.Header.Get("Host")) > 0 {
+		bw.WriteString("Host: " + config.Header.Get("Host") + "\r\n")
+	} else {
+		bw.WriteString("Host: " + config.Location.Host + "\r\n")
+	}
+
 	bw.WriteString("Upgrade: websocket\r\n")
 	bw.WriteString("Connection: Upgrade\r\n")
 	nonce := generateNonce()
